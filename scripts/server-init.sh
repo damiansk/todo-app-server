@@ -12,6 +12,8 @@ mysql -h dstolarek-todo-database-private.cgf1hknohtf8.us-east-1.rds.amazonaws.co
 
 npm install pm2 -g && pm2 update
 pm2 --version
+pm2 unstartup
+pm2 startup
 
 npm ci
 
