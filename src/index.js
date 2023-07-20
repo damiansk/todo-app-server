@@ -5,13 +5,18 @@ const cors = require('cors');
 
 const PORT = 3001;
 const DB_NAME = 'TODO_DB';
-const TABLE_NAME = 'Tasks';
+const TABLE_NAME = 'TASKS';
+
+// Replace dummy values with env vars
+const DB_HOST = 'dstolarek-todo-database-private.cgf1hknohtf8.us-east-1.rds.amazonaws.com'
+const DB_USER = 'admin'
+const DB_PASSWORD = '*yxR4Yi1NiiXHt4W'
 const app = express();
 
 const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
+  host: DB_HOST,
+  user: DB_USER,
+  password: DB_PASSWORD,
   database: DB_NAME
 });
 
