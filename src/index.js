@@ -1,16 +1,25 @@
+require('dotenv').config();
+
 const express = require('express');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-const PORT = 3001;
-const DB_NAME = 'TODO_DB';
-const TABLE_NAME = 'TASKS';
 
-// Replace dummy values with env vars
-const DB_HOST = 'dstolarek-todo-database-private.cgf1hknohtf8.us-east-1.rds.amazonaws.com'
-const DB_USER = 'admin'
-const DB_PASSWORD = '*yxR4Yi1NiiXHt4W'
+const SERVER_PORT = process.env.SERVER_PORT;
+const DB_NAME = process.env.DB_NAME;
+const TABLE_NAME = process.env.TABLE_NAME;
+const DB_HOST = process.env.TABLE_NAME;
+const DB_USER = process.env.DB_USER;
+const DB_PASSWORD = process.env.DB_PASSWORD;
+
+console.log('SERVER_PORT', SERVER_PORT);
+console.log('DB_NAME', DB_NAME);
+console.log('TABLE_NAME', TABLE_NAME);
+console.log('DB_HOST', DB_HOST);
+console.log('DB_USER', DB_USER);
+console.log('DB_PASSWORD', DB_PASSWORD);
+
 const app = express();
 
 const connection = mysql.createConnection({
@@ -87,6 +96,6 @@ app.get('/api/todo', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}`)
+app.listen(SERVER_PORT, () => {
+  console.log(`Example app listening on port ${SERVER_PORT}`)
 })
