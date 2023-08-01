@@ -9,7 +9,7 @@ const cors = require('cors');
 const SERVER_PORT = process.env.SERVER_PORT;
 const DB_NAME = process.env.DB_NAME;
 const TABLE_NAME = process.env.TABLE_NAME;
-const DB_HOST = process.env.TABLE_NAME;
+const DB_HOST = process.env.DB_HOST;
 const DB_USER = process.env.DB_USER;
 const DB_PASSWORD = process.env.DB_PASSWORD;
 

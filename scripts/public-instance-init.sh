@@ -1,7 +1,7 @@
 #!/bin/bash
 
-NGNIX_CONFIG_TARGET="/etc/nginx/conf.d/public-proxy.conf"
-PROXY_PASS_TARGET_IP="192.168.0.1"
+export NGNIX_CONFIG_TARGET="/etc/nginx/conf.d/public-proxy.conf"
+export PROXY_PASS_TARGET_IP=?
 
 apt update -y
 apt install nginx -y
