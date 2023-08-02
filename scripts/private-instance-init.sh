@@ -3,20 +3,25 @@
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
 echo "Setting variables"
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
-export NGNIX_CONFIG_TARGET=?
-export NGNIX_CONFIG_FILE=?
-export SERVER_PORT=?
-export DB_NAME=?
-export TABLE_NAME=?
-export DB_HOST=?
-export DB_USER=?
-export DB_PASSWORD=?
+export NGNIX_CONFIG_TARGET="/etc/nginx/sites-available"
+export NGNIX_CONFIG_FILE="default"
+
+export CLIENT_APP_DIR="todo-client-app"
+export SERVER_APP_DIR="todo-server-app"
+export SERVER_PORT=4000
+
+export DB_NAME='TODO_DB'
+export TABLE_NAME='TASKS'
+export DB_HOST=$(aws ssm get-parameter --name /upskill/devops/database/host --query "Parameter.Value" --output text)
+export DB_USER=$(aws ssm get-parameter --name /upskill/devops/database/user --query "Parameter.Value" --output text)
+export DB_PASSWORD=$(aws ssm get-parameter --name /upskill/devops/database/password --query "Parameter.Value" --output text)
+
 
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
 echo "Installing dependencies"
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
 apt update -y
-apt install npm nodejs mysql-client nginx -y
+apt install npm nodejs mysql-client nginx awscli -y
 
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
 echo "Setting up client application"

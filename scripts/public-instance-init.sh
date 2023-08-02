@@ -3,8 +3,8 @@
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
 echo "Setting variables"
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
-export NGNIX_CONFIG_TARGET=?
-export NGNIX_CONFIG_FILE=?
+export NGNIX_CONFIG_TARGET="/etc/nginx/sites-available"
+export NGNIX_CONFIG_FILE="default"
 export PROXY_PASS_TARGET_IP=?
 
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
