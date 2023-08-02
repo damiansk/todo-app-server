@@ -1,15 +1,27 @@
 #!/bin/bash
 
-export NGNIX_CONFIG_TARGET="/etc/nginx/sites-available"
-export NGNIX_CONFIG_FILE="default"
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
+echo "Setting variables"
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
+export NGNIX_CONFIG_TARGET=?
+export NGNIX_CONFIG_FILE=?
 export PROXY_PASS_TARGET_IP=?
 
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
+echo "Installing dependencies"
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
 apt update -y
 apt install nginx -y
 
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
+echo "Setting up nginx"
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
 systemctl start nginx.service
 systemctl enable nginx.service
 
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
+echo "Configuring nginx"
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
 echo "server {
     listen 80;
     listen [::]:80;
@@ -25,6 +37,13 @@ echo "server {
 }" >> $NGNIX_CONFIG_FILE
 
 mv $NGNIX_CONFIG_FILE $NGNIX_CONFIG_TARGET
-
 nginx -t
+
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
+echo "Restarting nginx"
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
 systemctl restart nginx.service
+
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
+echo "Finished"
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
