@@ -1,22 +1,4 @@
 #!/bin/bash
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
-echo "Setting variables"
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
-export NGNIX_CONFIG_TARGET="/etc/nginx/sites-available"
-export NGNIX_CONFIG_FILE="default"
-
-export CLIENT_APP_DIR="todo-client-app"
-export SERVER_APP_DIR="todo-server-app"
-export SERVER_PORT=4000
-
-export DB_NAME='TODO_DB'
-export TABLE_NAME='TASKS'
-export DB_HOST=$(aws ssm get-parameter --name /upskill/devops/database/host --query "Parameter.Value" --output text)
-export DB_USER=$(aws ssm get-parameter --name /upskill/devops/database/user --query "Parameter.Value" --output text)
-export DB_PASSWORD=$(aws ssm get-parameter --name /upskill/devops/database/password --query "Parameter.Value" --output text)
-
-
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
 echo "Installing dependencies"
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
@@ -24,14 +6,19 @@ apt update -y
 apt install npm nodejs mysql-client nginx awscli -y
 
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
-echo "Setting up client application"
+echo "Setting variables"
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
-git clone https://github.com/damiansk/todo-app-client.git
-npm ci --prefix todo-app-client
-npm run build --prefix todo-app-client
-mkdir /var/www/devops-upskill
-mv -v todo-app-client/build/* /var/www/devops-upskill
+export NGNIX_CONFIG_TARGET="/etc/nginx/sites-available"
+export NGNIX_CONFIG_FILE="default"
 
+export SERVER_APP_DIR="todo-server-app"
+export SERVER_PORT=4000
+
+export DB_HOST="?"
+export DB_USER=$(aws ssm get-parameter --name /upskill/devops/database/user --query "Parameter.Value" --with-decryption --region us-east-1 --output text)
+export DB_PASSWORD=$(aws ssm get-parameter --name /upskill/devops/database/password --query "Parameter.Value" --with-decryption --region us-east-1 --output text)
+export DB_NAME='TODO_DB'
+export TABLE_NAME='TASKS'
 
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
 echo "Setting up server application"
@@ -48,8 +35,6 @@ pm2 --name todo-server start npm -- start --prefix todo-app-server
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
 echo "Setting up database"
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
-# Uzywajac aws cli pobrac wartosci do polaczenia z db - parameter store
-# Uzyc zmiennej srodowiskowej do url, user & pass
 mysql -h $DB_HOST -u $DB_USER -p$DB_PASSWORD < ./todo-app-server/database/Tasks.sql
 
 
@@ -73,10 +58,6 @@ echo "server {
 
     location /api {
         proxy_pass http://127.0.0.1:$SERVER_PORT;
-    }
-
-    location / {
-        root /var/www/devops-upskill/;
     }
 }" >> $NGNIX_CONFIG_FILE
 

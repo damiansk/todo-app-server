@@ -1,17 +1,26 @@
 #!/bin/bash
 
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
+echo "Installing dependencies"
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
+apt update -y
+apt install npm nodejs nginx awscli -y
+
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
 echo "Setting variables"
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
 export NGNIX_CONFIG_TARGET="/etc/nginx/sites-available"
 export NGNIX_CONFIG_FILE="default"
-export PROXY_PASS_TARGET_IP=?
+export PROXY_PASS_TARGET_IP="?"
 
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
-echo "Installing dependencies"
+echo "Setting up client application"
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
-apt update -y
-apt install nginx -y
+git clone https://github.com/damiansk/todo-app-client.git
+npm ci --prefix todo-app-client
+npm run build --prefix todo-app-client
+mkdir /var/www/devops-upskill
+mv -v todo-app-client/build/* /var/www/devops-upskill
 
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
 echo "Setting up nginx"
@@ -31,8 +40,12 @@ echo "server {
     access_log /var/log/nginx/reverse-access.log;
     error_log /var/log/nginx/reverse-error.log;
 
-    location / {
+    location /api {
         proxy_pass http://$PROXY_PASS_TARGET_IP;
+    }
+
+    location / {
+        root /var/www/devops-upskill/;
     }
 }" >> $NGNIX_CONFIG_FILE
 
