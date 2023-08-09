@@ -2,10 +2,13 @@ require('dotenv').config();
 
 const express = require('express');
 const mysql = require('mysql2');
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
 
+const AWS_REGION = process.env.AWS_REGION;
 const SERVER_PORT = process.env.SERVER_PORT;
 const DB_NAME = process.env.DB_NAME;
 const TABLE_NAME = process.env.TABLE_NAME;
@@ -13,6 +16,7 @@ const DB_HOST = process.env.DB_HOST;
 const DB_USER = process.env.DB_USER;
 const DB_PASSWORD = process.env.DB_PASSWORD;
 
+console.log('AWS_REGION', AWS_REGION);
 console.log('SERVER_PORT', SERVER_PORT);
 console.log('DB_NAME', DB_NAME);
 console.log('TABLE_NAME', TABLE_NAME);
@@ -29,6 +33,10 @@ const connection = mysql.createConnection({
   database: DB_NAME
 });
 
+const s3Client = new S3Client({
+  region: AWS_REGION
+});
+
 connection.connect(err => {
   if (err) {
     console.error('Błąd połączenia z MySQL:', err);
@@ -39,6 +47,26 @@ connection.connect(err => {
 
 app.use(bodyParser.json());
 app.use(cors());
+
+app.get('/api/s3', async (req, res) => {
+  try {
+    const bucketName = 'dstolarek-test001-private';
+    const fileName = 'the-13-best-takes-on-the-windows-xp-bliss-wallpaper-g98pk791q3rr506a.jpg';
+
+    const params = {
+      Bucket: bucketName,
+      Key: fileName,
+    };
+
+    const command = new GetObjectCommand(params);
+    const signedUrl = await getSignedUrl(client, command, { expiresIn: 3600 });
+
+    res.json({ signedUrl });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Wystąpił błąd' });
+  }
+});
 
 app.post('/api/todo', (req, res) => {
   const { title, description } = req.body;
