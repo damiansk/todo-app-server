@@ -7,7 +7,6 @@ const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-
 const AWS_REGION = process.env.AWS_REGION;
 const SERVER_PORT = process.env.SERVER_PORT;
 const DB_NAME = process.env.DB_NAME;
@@ -15,6 +14,9 @@ const TABLE_NAME = process.env.TABLE_NAME;
 const DB_HOST = process.env.DB_HOST;
 const DB_USER = process.env.DB_USER;
 const DB_PASSWORD = process.env.DB_PASSWORD;
+
+const BUCKET_NAME = 'dstolarek-test001-private';
+const DEFAULT_FILE_NAME = 'the-13-best-takes-on-the-windows-xp-bliss-wallpaper-g98pk791q3rr506a.jpg';
 
 console.log('AWS_REGION', AWS_REGION);
 console.log('SERVER_PORT', SERVER_PORT);
@@ -50,21 +52,18 @@ app.use(cors());
 
 app.get('/api/s3', async (req, res) => {
   try {
-    const bucketName = 'dstolarek-test001-private';
-    const fileName = 'the-13-best-takes-on-the-windows-xp-bliss-wallpaper-g98pk791q3rr506a.jpg';
-
     const params = {
-      Bucket: bucketName,
-      Key: fileName,
+      Bucket: BUCKET_NAME,
+      Key: DEFAULT_FILE_NAME,
     };
 
     const command = new GetObjectCommand(params);
-    const signedUrl = await getSignedUrl(client, command, { expiresIn: 3600 });
+    const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
 
     res.json({ signedUrl });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Wystąpił błąd' });
+    res.status(500).json({ error: 'Wystąpił błąd podczas pobierania pliku' });
   }
 });
 
