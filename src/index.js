@@ -15,6 +15,16 @@ const DB_HOST = process.env.DB_HOST;
 const DB_USER = process.env.DB_USER;
 const DB_PASSWORD = process.env.DB_PASSWORD;
 
+const envs = {
+  AWS_REGION,
+  SERVER_PORT,
+  DB_NAME,
+  TABLE_NAME,
+  DB_HOST,
+  DB_USER,
+  DB_PASSWORD,
+}
+
 const BUCKET_NAME = 'dstolarek-test001-private';
 const DEFAULT_FILE_NAME = 'the-13-best-takes-on-the-windows-xp-bliss-wallpaper-g98pk791q3rr506a.jpg';
 
@@ -63,7 +73,7 @@ app.get('/api/s3', async (req, res) => {
     res.json({ signedUrl });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Wystąpił błąd podczas pobierania pliku' });
+    res.status(500).json({ error: `Błąd podczas pobierania obrazka: ${JSON.stringify(error)}`, envs });
   }
 });
 
@@ -75,7 +85,7 @@ app.post('/api/todo', (req, res) => {
   connection.query(query, [title, description, status], (err, results) => {
     if (err) {
       console.error('Błąd podczas dodawania zadania:', err);
-      res.status(500).json({ error: 'Błąd podczas dodawania zadania' });
+      res.status(500).json({ error: `Błąd podczas dodawania zadania: ${JSON.stringify(err)}`, envs });
       return;
     }
     res.status(201).json({ id: results.insertId, title, description, status });
@@ -89,7 +99,7 @@ app.delete('/api/todo/:id', (req, res) => {
   connection.query(query, [todoId], (err, results) => {
     if (err) {
       console.error('Błąd podczas usuwania zadania:', err);
-      res.status(500).json({ error: 'Błąd podczas usuwania zadania' });
+      res.status(500).json({ error: `Błąd podczas usuwania zadania: ${JSON.stringify(err)}` });
       return;
     }
     res.status(200).json({ message: 'Zadanie zostało usunięte' });
@@ -116,7 +126,7 @@ app.get('/api/todo', (req, res) => {
   connection.query(query, (err, results) => {
     if (err) {
       console.error('Błąd podczas pobierania listy zadań:', err);
-      res.status(500).json({ error: 'Błąd podczas pobierania listy zadań' });
+      res.status(500).json({ error: `Błąd podczas pobierania zadan: ${JSON.stringify(err)}`, envs });
       return;
     }
     res.status(200).json(results);
