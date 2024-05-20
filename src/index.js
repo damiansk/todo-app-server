@@ -73,7 +73,7 @@ app.get('/api/s3', async (req, res) => {
     res.json({ signedUrl });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: `Błąd podczas pobierania obrazka: ${JSON.stringify(error)}`, envs });
+    res.status(500).json({ error: `Błąd podczas pobierania obrazka: ${JSON.stringify(error)}` });
   }
 });
 
@@ -85,7 +85,7 @@ app.post('/api/todo', (req, res) => {
   connection.query(query, [title, description, status], (err, results) => {
     if (err) {
       console.error('Błąd podczas dodawania zadania:', err);
-      res.status(500).json({ error: `Błąd podczas dodawania zadania: ${JSON.stringify(err)}`, envs });
+      res.status(500).json({ error: `Błąd podczas dodawania zadania: ${JSON.stringify(err)}` });
       return;
     }
     res.status(201).json({ id: results.insertId, title, description, status });
@@ -126,7 +126,7 @@ app.get('/api/todo', (req, res) => {
   connection.query(query, (err, results) => {
     if (err) {
       console.error('Błąd podczas pobierania listy zadań:', err);
-      res.status(500).json({ error: `Błąd podczas pobierania zadan: ${JSON.stringify(err)}`, envs });
+      res.status(500).json({ error: `Błąd podczas pobierania zadan: ${JSON.stringify(err)}` });
       return;
     }
     res.status(200).json(results);

@@ -20,19 +20,45 @@ jobs:
       - name: Run tests
         run: npm run test
 
-      - name: Repository Dispatch
+      - name: Trigger App Update
+        id: trigger
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.PAT }}
           script: |
-            await github.rest.actions.createWorkflowDispatch({
+            const result = await github.rest.actions.createWorkflowDispatch({
               owner: 'damiansk',
               repo: 'DevOps-Upskill-Part-II',
               workflow_id: 'apps.yml',
               ref: 'main'
             })
-        # uses: peter-evans/repository-dispatch@v3
-        # with:
-        #   token: ${{ secrets.PAT }}
-        #   repository: damiansk/DevOps-Upskill-Part-II
-        #   event-type: update-app
+            console.log(`Triggered workflow run ID: ${result.data.id}`);
+            core.setOutput('run-id', result.data.id);
+      - name: Wait for Workflow
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PAT }}
+          script: |
+            const runId = '${{ steps.trigger.outputs.run-id }}';
+            const waitTime = 60; // Wait for 60 seconds
+
+            while (true) {
+              try {
+                const run = await github.rest.actions.getWorkflowRun({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  runId: runId
+                });
+                
+                if (run.data.status === 'completed') {
+                  console.log(`Workflow run completed with conclusion: ${run.data.conclusion}`);
+                  break;
+                } else {
+                  console.log(`Workflow run status: ${run.data.status}`);
+                  await new Promise(resolve => setTimeout(resolve, waitTime * 1000));
+                }
+              } catch (error) {
+                console.log(`Error waiting for workflow run: ${error}`);
+                break;
+              }
+            }
